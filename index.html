@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and URL Display</title>
+</head>
+<body>
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="uploadImage()">Upload</button>
+    <p>URL Response:</p>
+    <textarea id="URLOutput" rows="10" cols="50" readonly></textarea>
+    <p>Preview:</p>
+    <img id="imagePreview" style="max-width: 300px; display: none;">
+
+    <script>
+        async function uploadImage() {
+            const input = document.getElementById('imageInput');
+            if (!input.files.length) {
+                alert('Please select an image.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('image', input.files[0]);
+            
+            try {
+                const response = await fetch('https://image-upload-u526.vercel.app/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.url) {
+                    document.getElementById('URLOutput').value = data.url;
+                    document.getElementById('imagePreview').src = data.url;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    console.log('URL:', data.url);
+                } else {
+                    alert('Failed to retrieve URL response.');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('An error occurred while uploading the image.');
+            }
+        }
+    </script>
+</body>
+</html>
